@@ -149,7 +149,16 @@ describe('File formats', function () {
 
       let size = await probe(fs.createReadStream(file));
 
-      assert.deepStrictEqual(size, { width: 367, height: 187, type: 'jpg', mime: 'image/jpeg', wUnits: 'px', hUnits: 'px' });
+      assert.deepStrictEqual(size, { width: 367, height: 187, components: 3, type: 'jpg', mime: 'image/jpeg', wUnits: 'px', hUnits: 'px' });
+    });
+
+
+    it('should detect CMYK JPEG', async function () {
+      let file = path.join(__dirname, 'fixtures', 'iojs_logo_cmyk.jpeg');
+
+      let size = await probe(fs.createReadStream(file));
+
+      assert.deepStrictEqual(size, { width: 367, height: 187, components: 4, type: 'jpg', mime: 'image/jpeg', wUnits: 'px', hUnits: 'px' });
     });
 
 
@@ -161,6 +170,7 @@ describe('File formats', function () {
       assert.deepStrictEqual(size, {
         width: 192,
         height: 192,
+        components: 3,
         type: 'jpg',
         mime: 'image/jpeg',
         wUnits: 'px',
@@ -176,7 +186,7 @@ describe('File formats', function () {
 
       let size = await probe(fs.createReadStream(file));
 
-      assert.deepStrictEqual(size, { width: 40, height: 20, type: 'jpg', mime: 'image/jpeg', wUnits: 'px', hUnits: 'px' });
+      assert.deepStrictEqual(size, { width: 40, height: 20, components: 1, type: 'jpg', mime: 'image/jpeg', wUnits: 'px', hUnits: 'px' });
     });
 
 
@@ -196,7 +206,7 @@ describe('File formats', function () {
 
       let size = await probe(Readable.from([ buf ]));
 
-      assert.deepStrictEqual(size, { width: 15, height: 15, type: 'jpg', mime: 'image/jpeg', wUnits: 'px', hUnits: 'px' });
+      assert.deepStrictEqual(size, { width: 15, height: 15, components: 3, type: 'jpg', mime: 'image/jpeg', wUnits: 'px', hUnits: 'px' });
     });
 
 
@@ -206,7 +216,7 @@ describe('File formats', function () {
 
       let size = await probe(Readable.from([ buf ]));
 
-      assert.deepStrictEqual(size, { width: 15, height: 15, type: 'jpg', mime: 'image/jpeg', wUnits: 'px', hUnits: 'px' });
+      assert.deepStrictEqual(size, { width: 15, height: 15, components: 3, type: 'jpg', mime: 'image/jpeg', wUnits: 'px', hUnits: 'px' });
 
       // but don't allow garbage after first segment
       buf = Buffer.from('FFD8 AAAAAAAA FFE00002 FFC00011 08000F000F03012200021101031101 FFD9'.replace(/ /g, ''), 'hex');
@@ -253,7 +263,15 @@ describe('File formats', function () {
       let file = path.join(__dirname, 'fixtures', 'iojs_logo.jpeg');
       let size = probe.sync(fs.readFileSync(file));
 
-      assert.deepStrictEqual(size, { width: 367, height: 187, type: 'jpg', mime: 'image/jpeg', wUnits: 'px', hUnits: 'px' });
+      assert.deepStrictEqual(size, { width: 367, height: 187, components: 3, type: 'jpg', mime: 'image/jpeg', wUnits: 'px', hUnits: 'px' });
+    });
+
+
+    it('should detect CMYK JPEG', function () {
+      let file = path.join(__dirname, 'fixtures', 'iojs_logo_cmyk.jpeg');
+      let size = probe.sync(fs.readFileSync(file));
+
+      assert.deepStrictEqual(size, { width: 367, height: 187, components: 4, type: 'jpg', mime: 'image/jpeg', wUnits: 'px', hUnits: 'px' });
     });
 
 
@@ -264,6 +282,7 @@ describe('File formats', function () {
       assert.deepStrictEqual(size, {
         width: 192,
         height: 192,
+        components: 3,
         type: 'jpg',
         mime: 'image/jpeg',
         wUnits: 'px',
@@ -277,7 +296,7 @@ describe('File formats', function () {
       let file = path.join(__dirname, 'fixtures', 'empty_comment.jpg');
       let size = probe.sync(fs.readFileSync(file));
 
-      assert.deepStrictEqual(size, { width: 40, height: 20, type: 'jpg', mime: 'image/jpeg', wUnits: 'px', hUnits: 'px' });
+      assert.deepStrictEqual(size, { width: 40, height: 20, components: 1, type: 'jpg', mime: 'image/jpeg', wUnits: 'px', hUnits: 'px' });
     });
 
 
@@ -294,7 +313,7 @@ describe('File formats', function () {
       let buf = str2arr('FFD8 FFFFFFFFC00011 08000F000F03012200021101031101 FFFFD9'.replace(/ /g, ''), 'hex');
       let size = probe.sync(buf);
 
-      assert.deepStrictEqual(size, { width: 15, height: 15, type: 'jpg', mime: 'image/jpeg', wUnits: 'px', hUnits: 'px' });
+      assert.deepStrictEqual(size, { width: 15, height: 15, components: 3, type: 'jpg', mime: 'image/jpeg', wUnits: 'px', hUnits: 'px' });
     });
 
 
@@ -303,7 +322,7 @@ describe('File formats', function () {
       let buf = str2arr('FFD8 FFE00002 AAAAAAAA FFC00011 08000F000F03012200021101031101 FFD9'.replace(/ /g, ''), 'hex');
       let size = probe.sync(buf);
 
-      assert.deepStrictEqual(size, { width: 15, height: 15, type: 'jpg', mime: 'image/jpeg', wUnits: 'px', hUnits: 'px' });
+      assert.deepStrictEqual(size, { width: 15, height: 15, components: 3, type: 'jpg', mime: 'image/jpeg', wUnits: 'px', hUnits: 'px' });
 
       // but don't allow garbage after first segment
       buf = str2arr('FFD8 AAAAAAAA FFE00002 FFC00011 08000F000F03012200021101031101 FFD9'.replace(/ /g, ''), 'hex');
